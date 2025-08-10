@@ -1,0 +1,88 @@
+ai-streaming-platform/
+│
+├── README.md
+├── requirements.txt         # Backend dependencies
+├── package.json             # Frontend dependencies
+├── /server                  # Backend (FastAPI)
+│   ├── main.py
+│   ├── recommender.py
+│   ├── models.py
+│   ├── data/
+│   │   └── viewing_history.json
+│   └── __init__.py
+│
+├── /client                  # Frontend (React)
+│   ├── src/
+│   │   ├── App.js
+│   │   ├── components/
+│   │   │   └── QueueList.js
+│   │   └── api.js
+│   └── package.json
+│
+└── /data
+    └── sample_movies.jsonfrom fastapi import FastAPI
+from recommender import get_recommendations
+import json
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"message": "AI Streaming Recommendations API"}
+
+@app.get("/recommend")
+def recommend(mode: str = "binge"):
+    with open("server/data/viewing_history.json") as f:
+        history = json.load(f)
+    recommendations = get_recommendations(history, mode)
+    return {"mode": mode, "recommendations": recommendations}import random
+
+def get_recommendations(history, mode):
+    # Placeholder logic for now
+    movie_pool = [
+        "The Office", "Breaking Bad", "The Crown", "Inception",
+        "Parks and Recreation", "Better Call Saul", "Dune"
+    ]
+    if mode == "binge":
+        return random.sample(movie_pool, 5)
+    else:
+        return random.sample(movie_pool, 3){
+    "watched": ["The Office", "Parks and Recreation"],
+    "genres": ["comedy", "drama"]
+}fastapi
+uvicornimport React, { useState, useEffect } from "react";
+import QueueList from "./components/QueueList";
+import { fetchRecommendations } from "./api";
+
+function App() {
+  const [mode, setMode] = useState("binge");
+  const [queue, setQueue] = useState([]);
+
+  useEffect(() => {
+    fetchRecommendations(mode).then(data => setQueue(data.recommendations));
+  }, [mode]);
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>AI Streaming Recommendations</h1>
+      <button onClick={() => setMode("binge")}>Binge Mode</button>
+      <button onClick={() => setMode("casual")}>Casual Mode</button>
+      <QueueList queue={queue} />
+    </div>
+  );
+}
+
+export default App;import React from "react";
+
+function QueueList({ queue }) {
+  return (
+    <ul>
+      {queue.map((item, idx) => <li key={idx}>{item}</li>)}
+    </ul>
+  );
+}
+
+export default QueueList;export async function fetchRecommendations(mode) {
+  const res = await fetch(`http://localhost:8000/recommend?mode=${mode}`);
+  return res.json();
+}
