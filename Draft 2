@@ -85,4 +85,21 @@ function QueueList({ queue }) {
 export default QueueList;export async function fetchRecommendations(mode) {
   const res = await fetch(`http://localhost:8000/recommend?mode=${mode}`);
   return res.json();
-}
+}# AI Streaming Platform
+
+An AI-powered recommendation engine for streaming content.
+
+## Features
+- Binge or casual mode recommendations
+- Mock viewing history for testing
+- FastAPI backend + React frontend
+
+## Setup
+
+### Backend
+```bash
+cd server
+pip install -r ../requirements.txt
+uvicorn main:app --reloadcd client
+npm install
+npm start---
